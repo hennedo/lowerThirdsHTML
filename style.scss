@@ -1,0 +1,181 @@
+// this template is not intended to be compiled by anything other than the index.js process.
+
+body, html {
+  margin: 0;
+  padding: 0;
+
+}
+.lowerthird, .subtitle, .title {
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+.container {
+  position: absolute;
+  top: $styles-top;
+  left: $styles-left;
+  width: $styles-width;
+  height: $styles-height;
+}
+.lowerthird {
+  background-color: $styles-background-color;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+.lowerthird.ng-enter {
+  -webkit-animation-name: $styles-animation-in;
+  animation-name: $styles-animation-in;
+  -webkit-animation-duration: $styles-inDuration;
+  animation-duration: $styles-inDuration;
+  -webkit-animation-delay: $styles-inDelay;
+  animation-delay: $styles-inDelay;
+  -webkit-animation-timing-function: $styles-in-timing-function;
+  animation-timing-function: $styles-in-timing-function;
+}
+.lowerthird.ng-leave {
+  -webkit-animation-name: $styles-animation-out;
+  animation-name: $styles-animation-out;
+  -webkit-animation-duration: $styles-outDuration;
+  animation-duration: $styles-outDuration;
+  -webkit-animation-delay: $styles-outDelay;
+  animation-delay: $styles-outDelay;
+  -webkit-animation-timing-function: $styles-out-timing-function;
+  animation-timing-function: $styles-out-timing-function;
+}
+.title.ng-enter {
+  -webkit-animation-name: $titleStyles-animation-in;
+  animation-name: $titleStyles-animation-in;
+  -webkit-animation-duration: $titleStyles-inDuration;
+  animation-duration: $titleStyles-inDuration;
+  -webkit-animation-delay: $titleStyles-inDelay;
+  animation-delay: $titleStyles-inDelay;
+  -webkit-animation-timing-function: $titleStyles-in-timing-function;
+  animation-timing-function: $titleStyles-in-timing-function;
+  @if $titleStyles-animation-in == flipInX {
+    -webkit-backface-visibility: visible !important;
+    backface-visibility: visible !important;
+  }
+}
+.subtitle.ng-enter {
+  -webkit-animation-name: $subtitleStyles-animation-in;
+  animation-name: $subtitleStyles-animation-in;
+  -webkit-animation-duration: $subtitleStyles-inDuration;
+  animation-duration: $subtitleStyles-inDuration;
+  -webkit-animation-delay: $subtitleStyles-inDelay;
+  animation-delay: $subtitleStyles-inDelay;
+  -webkit-animation-timing-function: $subtitleStyles-in-timing-function;
+  animation-timing-function: $subtitleStyles-in-timing-function;
+}
+.title.ng-leave {
+  -webkit-animation-name: $titleStyles-animation-out;
+  animation-name: $titleStyles-animation-out;
+  -webkit-animation-duration: $titleStyles-outDuration;
+  animation-duration: $titleStyles-outDuration;
+  -webkit-animation-delay: $titleStyles-outDelay;
+  animation-delay: $titleStyles-outDelay;
+  -webkit-animation-timing-function: $titleStyles-out-timing-function;
+  animation-timing-function: $titleStyles-out-timing-function;
+}
+.subtitle.ng-leave {
+  -webkit-animation-name: $subtitleStyles-animation-out;
+  animation-name: $subtitleStyles-animation-out;
+  -webkit-animation-duration: $subtitleStyles-outDuration;
+  animation-duration: $subtitleStyles-outDuration;
+  -webkit-animation-delay: $subtitleStyles-outDelay;
+  animation-delay: $subtitleStyles-outDelay;
+  -webkit-animation-timing-function: $subtitleStyles-out-timing-function;
+  animation-timing-function: $subtitleStyles-out-timing-function;
+}
+.subtitle {
+  font-size: $subtitleStyles-font-size;
+  font-family: $subtitleStyles-font-family;
+  font-weight: $subtitleStyles-font-weight;
+  top: $subtitleStyles-top;
+  @if $subtitleStyles-text-align == 'right' {
+    right: 100%-$subtitleStyles-left;
+    width: $subtitleStyles-left;
+  } @else {
+    left: $subtitleStyles-left;
+    width: 100%-$subtitleStyles-left;
+  }
+  color: $subtitleStyles-color;
+  text-align: $subtitleStyles-text-align;
+
+}
+.title {
+  font-size: $titleStyles-font-size;
+  font-family: $titleStyles-font-family;
+  font-weight: $titleStyles-font-weight;
+  top: $titleStyles-top;
+  @if $titleStyles-text-align == 'right' {
+    right: 100%-$titleStyles-left;
+    width: $titleStyles-left;
+  } @else {
+    left: $titleStyles-left;
+    width: 100%-$titleStyles-left;
+  }
+  color: $titleStyles-color;
+  text-align: $titleStyles-text-align;
+
+}
+.titles {
+  position: absolute;
+  overflow: hidden;
+}
+
+img {
+  position: absolute;
+  height: auto;
+}
+.img-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+@for $i from 0 to $imagesCount {
+  .img-#{$i} {
+    width: nth($images-width, $i+1);
+
+    -moz-transform: rotate(nth($images-rotation, $i+1));
+    -ms-transform: rotate(nth($images-rotation, $i+1));
+    -o-transform: rotate(nth($images-rotation, $i+1));
+    -webkit-transform: rotate(nth($images-rotation, $i+1));
+    transform: rotate(nth($images-rotation, $i+1));
+
+    opacity: nth($images-opacity, $i+1);
+
+
+  }
+  .img-container-#{$i} {
+    top: nth($images-top, $i+1);
+    left: nth($images-left, $i+1);
+    z-index: nth($images-z-index, $i+1);
+  }
+  .img-container-#{$i}.ng-enter {
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+
+    -webkit-animation-name: nth($images-animation-in, $i+1);
+    animation-name: nth($images-animation-in, $i+1);
+    -webkit-animation-duration: nth($images-inDuration, $i+1);
+    animation-duration: nth($images-inDuration, $i+1);
+    -webkit-animation-delay: nth($images-inDelay, $i+1);
+    animation-delay: nth($images-inDelay, $i+1);
+    -webkit-animation-timing-function: nth($images-in-timing-function, $i+1);
+    animation-timing-function: nth($images-in-timing-function, $i+1);
+  }
+  .img-container-#{$i}.ng-leave {
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+
+    -webkit-animation-name: nth($images-animation-out, $i+1);
+    animation-name: nth($images-animation-out, $i+1);
+    -webkit-animation-duration: nth($images-outDuration, $i+1);
+    animation-duration: nth($images-outDuration, $i+1);
+    -webkit-animation-delay: nth($images-outDelay, $i+1);
+    animation-delay: nth($images-outDelay, $i+1);
+    -webkit-animation-timing-function: nth($images-out-timing-function, $i+1);
+    animation-timing-function: nth($images-out-timing-function, $i+1);
+  }
+}

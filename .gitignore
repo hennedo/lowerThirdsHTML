@@ -1,0 +1,12 @@
+*.iml
+.DS_Store
+.idea/*
+bower_components/*
+node_modules/*
+build/*
+config.json
+*.map
+static/img/uploads/*
+styles.scss
+styles.css
+style.css

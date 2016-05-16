@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html ng-app="presenter" ng-controller="lowerthirdCtrl">
+<head lang="en">
+  <meta charset="UTF-8">
+  <script src="//code.jquery.com/jquery-1.12.3.min.js"></script>
+  <script src="js/emoji.js">  </script>
+  <link rel="stylesheet" href="css/emoji.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="//code.angularjs.org/1.5.5/angular.js"></script>
+  <script src="//code.angularjs.org/1.5.5/angular-animate.js"></script>
+  <link rel="stylesheet" href="css/animate.css" />
+  <script src="js/angular-socket.js"></script>
+  <script src="js/presenter.js"></script>
+  <title>Lower Thirds</title>
+  <style type="text/css" ng-bind-html="styles">
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="lowerthird" ng-if="show"></div>
+    <span class="titles title" ng-bind-html="title" ng-if="title" id="title"></span>
+    <span class="titles subtitle" ng-bind-html="subtitle" ng-if="subtitle" id="subtitle"></span>
+    <div class="img-container img-container-{{$index}}" ng-repeat="item in images" ng-if="show"><img ng-src="/img/uploads/{{item.url}}" class="img-{{$index}}"></div>
+  </div>
+</body>
+</html>

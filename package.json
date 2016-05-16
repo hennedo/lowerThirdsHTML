@@ -1,0 +1,28 @@
+{
+  "name": "lowerthirdshtml",
+  "version": "0.1.0",
+  "description": "lowerthirds for obs",
+  "dependencies": {
+    "async": "^1.5.2",
+    "express": "^4.13.3",
+    "forever": "^0.15.1",
+    "lodash": "^4.12.0",
+    "multer": "^1.1.0",
+    "node-sass": "^3.2.0",
+    "node-uuid": "^1.4.7",
+    "node.extend": "^1.1.5",
+    "ntwitter": "^0.5.0",
+    "socket.io": "^1.3.6",
+    "zip-zip-top": "^0.2.0"
+  },
+  "main": "index.js",
+  "devDependencies": {
+    "electron-prebuilt": "^1.0.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron index.js"
+  },
+  "author": "Hendrik Fellerhoff",
+  "license": "GPLv3"
+}

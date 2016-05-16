@@ -1,0 +1,47 @@
+<section>
+  <div class="row text-center">
+
+    <button class="btn btn-primary btn-lg" ng-click="showTweets()">Show</button>
+  </div>
+  <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-5">
+      <h1>Current Tweets</h1>
+      <table class="table table-striped table-hover">
+        <tr>
+          <th>Screen Name</th>
+          <th>Tweet</th>
+        </tr>
+        <tbody>
+        <tr ng-repeat="tweet in currentTweets" ng-click="selectTweet(tweet)" class="tweet">
+          <td>@{{tweet.screen_name}}</td>
+          <td ng-bind-html="tweet.text"></td>
+        </tr>
+        </tbody>
+        <tbody>
+
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col-md-5">
+      <h1>Selected Tweets</h1>
+      <table class="table table-striped table-hover">
+        <tr>
+          <th>Screen Name</th>
+          <th>Tweet</th>
+        </tr>
+        <tbody>
+        <tr ng-repeat="tweet in selectedTweets" ng-click="deselectTweet(tweet)" class="tweet">
+          <td>@{{tweet.screen_name}}</td>
+          <td ng-bind-html="tweet.text"></td>
+        </tr>
+        </tbody>
+        <tbody>
+
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-1"></div>
+  </div>
+</section>

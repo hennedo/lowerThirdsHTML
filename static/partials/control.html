@@ -1,0 +1,40 @@
+<section>
+
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-3">
+            <form ng-submit="show()">
+                <div class="form-group">
+                    <label for="title">Titel</label>
+                    <input type="text" class="form-control" id="title" placeholder="Title" ng-model="title">
+                </div>
+                <div class="form-group">
+                    <label for="subtitle">Subtitle</label>
+                    <input type="text" class="form-control" id="subtitle" placeholder="Subtitle" ng-model="subtitle">
+                </div>
+                <button type="submit" class="btn btn-success">Show</button>
+                <button class="btn btn-primary" ng-click="add($event)">Add to list</button>
+            </form>
+        </div>
+        <div class="col-md-7">
+            <table class="table table-striped">
+                <tr>
+                    <th style="width: 100px"><button class="btn btn-success" ng-click="play(item)" ng-if="list.length"><span class="glyphicon glyphicon-step-forward"></span></button></th>
+                    <th></th>
+                    <th>Titel</th>
+                    <th>Subtitle</th>
+                </tr>
+                <tr ng-repeat="item in list">
+                    <td style="width: 100px"><button class="btn btn-default" ng-click="playItem(item)"><span class="glyphicon glyphicon-play"></span></button><button class="btn btn-default" ng-click="up(item)"><span class="glyphicon glyphicon-chevron-up"></span></button><br/>
+                        <button class="btn btn-default" ng-click="remove(item)"><span class="glyphicon glyphicon-trash"></span></button><button class="btn btn-default" ng-click="down(item)"><span class="glyphicon glyphicon-chevron-down"></span></button></td>
+                    <td>{{$index+1}}</td>
+                    <td>{{item.title}}</td>
+                    <td>{{item.subtitle}}</td>
+                </tr>
+
+            </table>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+
+</section>
