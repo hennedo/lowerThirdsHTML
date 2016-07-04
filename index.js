@@ -4,7 +4,7 @@ var express = require('express');
 var web = express();
 var http = require('http').Server(web);
 var io = require('socket.io')(http);
-var twitter = require('ntwitter');
+var twitter = require('twitter');
 var fs = require('fs');
 var async = require('async');
 var extend = require('node.extend');
@@ -250,6 +250,7 @@ io.on('connection', function(socket){
     config = extend(true, config, msg);
     config.lowerThird.images = msg.lowerThird.images;
     fs.writeFile('./config.json', JSON.stringify(config), "utf8");
+    createTwitStream();
     createStyles();
   });
   socket.on('updateStyles', function(msg) {
@@ -384,23 +385,26 @@ io.on('connection', function(socket){
 
 var twit = new twitter(config.twitter);
 var tweets = [];
+var stream;
 var selectedTweets = [];
 function createTwitStream() {
-  if(!config.twitter.hashtag) {
+  console.log(!!stream);
+  console.log("creating twitter stream", config.twitter.hashtag);
+  if(stream)
+    stream.destroy();
+  if(!config.twitter.hashtag)
     return;
-  }
-  twit.stream('statuses/filter', {track: config.twitter.hashtag}, function(stream) {
-    stream.on('data', function(msg) {
-      if(msg.retweeted || msg.in_reply_to_screen_name != null || msg.text.substr(0,2) == "RT") { return; }
-      tweets.push({
-        screen_name: msg.user.screen_name,
-        text: msg.text,
-        id: msg.id
-      });
-      if(tweets.length > 10)
-        tweets.shift();
-      io.emit('tweet', tweets);
-    })
+  stream = twit.stream('statuses/filter', {track: config.twitter.hashtag});
+  stream.on('data', function(msg) {
+    if(msg.retweeted || msg.in_reply_to_screen_name != null || msg.text.substr(0,2) == "RT") { return; }
+    tweets.push({
+      screen_name: msg.user.screen_name,
+      text: msg.text,
+      id: msg.id
+    });
+    if(tweets.length > 10)
+      tweets.shift();
+    io.emit('tweet', tweets);
   });
 }
 createTwitStream();
