@@ -11,6 +11,7 @@ var extend = require('node.extend');
 var sass = require('node-sass');
 var multer = require('multer');
 var uuid = require('node-uuid');
+var osc = require('osc-receiver');
 var _ = require('lodash');
 const electron = require('electron');
 const Zip = require('zip-zip-top');
@@ -70,6 +71,26 @@ var uploader = multer({
       cb(null, Date.now() + '.' + file.originalname.split('.').pop());
     }
   })
+});
+
+var receiver = new osc();
+try {
+  receiver.bind(8001);
+} catch(e) {
+  console.log(e);
+}
+
+receiver.on('message', function() {
+
+  // handle all messages
+  var address = arguments[0];
+  var args = Array.prototype.slice.call(arguments, 1);
+  console.log(address, args);
+});
+
+receiver.on('/lowerthird/next', function(a) {
+  if(a)
+    showNext();
 });
 
 web.post('/upload', uploader.single('file'), function(req, res) {
@@ -175,6 +196,14 @@ var createImageStyles = function(images) {
   }
   return buf;
 };
+function showNext(socket) {
+  var item = config.list.shift();
+  io.emit('show', item);
+  if(socket)
+    socket.emit('list', config.list);
+  else
+    io.emit('list', config.list);
+}
 io.on('connection', function(socket){
   function createStyles(c) {
     c = c || config;
@@ -266,9 +295,7 @@ io.on('connection', function(socket){
     socket.emit('list', config.list);
   });
   socket.on('playNext', function() {
-    var item = config.list.shift();
-    io.emit('show', item);
-    socket.emit('list', config.list);
+    showNext(socket);
   });
   socket.on('playItem', function(msg) {
     for(var i=0; i<config.list.length; i++) {

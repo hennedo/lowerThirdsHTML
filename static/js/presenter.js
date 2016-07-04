@@ -69,10 +69,11 @@ app.controller('lowerthirdCtrl', function($scope, socket, $timeout, $animate) {
   function setInstant(title, subtitle, id) {
     set(title, subtitle);
     $scope.id = id;
-    $timeout(function() {
-      if($scope.id === id)
-        hide();
-    }, showtime);
+    if(showtime)
+      $timeout(function() {
+        if($scope.id === id)
+          hide();
+      }, showtime);
   }
   socket.on('hide', function() {
     hide();
