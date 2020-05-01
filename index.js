@@ -1,22 +1,21 @@
 'use strict';
-
-var express = require('express');
-var web = express();
-var http = require('http').Server(web);
-var io = require('socket.io')(http);
-var twitter = require('twitter');
-var fs = require('fs');
-var async = require('async');
-var extend = require('node.extend');
-var sass = require('node-sass');
-var multer = require('multer');
-var uuid = require('node-uuid');
-var osc = require('osc-receiver');
-var _ = require('lodash');
+let uuidv4 = require('uuid').v4;
+let express = require('express');
+let web = express();
+let http = require('http').createServer(web);
+let io = require('socket.io')(http);
+let Twitter = require('twitter-lite');
+let fs = require('fs');
+let async = require('async');
+let extend = require('node.extend');
+let sass = require('sass');
+let multer = require('multer');
+let osc = require('osc-receiver');
+let _ = require('lodash');
 const electron = require('electron');
 const Zip = require('zip-zip-top');
 const app = electron.app;
-var config;
+let config;
 try {
   config = require('./config.json');
 } catch(e) {
@@ -49,9 +48,9 @@ if(!fs.existsSync(__dirname + '/static/img/uploads')) {
 
 // delete unused uploads
 (function() {
-  var files = fs.readdirSync(__dirname + '/static/img/uploads');
+  let files = fs.readdirSync(__dirname + '/static/img/uploads');
   files.forEach(function(e) {
-    var there = false;
+    let there = false;
     config.lowerThird.images.forEach(function(i) {
       if(e === i.url) {
         there = true
@@ -62,7 +61,7 @@ if(!fs.existsSync(__dirname + '/static/img/uploads')) {
   });
 })();
 
-var uploader = multer({
+let uploader = multer({
   storage: multer.diskStorage({
     destination: function(req, file, cb) {
       cb(null, __dirname + '/static/img/uploads');
@@ -73,7 +72,7 @@ var uploader = multer({
   })
 });
 
-var receiver = new osc();
+let receiver = new osc();
 try {
   receiver.bind(8001);
 } catch(e) {
@@ -83,8 +82,8 @@ try {
 receiver.on('message', function() {
 
   // handle all messages
-  var address = arguments[0];
-  var args = Array.prototype.slice.call(arguments, 1);
+  let address = arguments[0];
+  let args = Array.prototype.slice.call(arguments, 1);
   console.log(address, args);
 });
 
@@ -96,7 +95,7 @@ receiver.on('/lowerthird/next', function(a) {
 web.post('/upload', uploader.single('file'), function(req, res) {
   if(!config.lowerThird.images)
     config.lowerThird.images = [];
-  var image = {
+  let image = {
     url: req.file.filename,
     styles: {
       width: 100,
@@ -130,10 +129,10 @@ http.listen(3000, function(){
   console.log('listening on *:3000');
 });
 
-var createStyle = function(obj, style) {
-  var s = "";
-  for(var name in obj[style]) {
-    var unit = "";
+let createStyle = function(obj, style) {
+  let s = "";
+  for(let name in obj[style]) {
+    let unit = "";
     switch(name) {
       case "top":
       case "left":
@@ -157,14 +156,14 @@ var createStyle = function(obj, style) {
   }
   return s;
 };
-var createImageStyles = function(images) {
-  var data = {};
+let createImageStyles = function(images) {
+  let data = {};
   images.forEach(function(i) {
-    var s = i.styles;
-    for(var name in s) {
+    let s = i.styles;
+    for(let name in s) {
       if(!data[name])
         data[name] = '';
-      var unit = "";
+      let unit = "";
       switch(name) {
         case "top":
         case "left":
@@ -189,15 +188,15 @@ var createImageStyles = function(images) {
       data[name] += " " + s[name] + unit;
     }
   });
-  var buf = "";
+  let buf = "";
 
-  for(var name in data) {
+  for(let name in data) {
     buf += '$images-' + name + ':' + data[name] + "; \n";
   }
   return buf;
 };
 function showNext(socket) {
-  var item = config.list.shift();
+  let item = config.list.shift();
   io.emit('show', item);
   if(socket)
     socket.emit('list', config.list);
@@ -210,15 +209,15 @@ io.on('connection', function(socket){
     if(!c) {
       return;
     }
-    var style_variables = "";
+    let style_variables = "";
     style_variables += createStyle(c.lowerThird, 'styles');
     style_variables += createStyle(c.lowerThird, 'titleStyles');
     style_variables += createStyle(c.lowerThird, 'subtitleStyles');
     style_variables += '$imagesCount: ' + c.lowerThird.images.length + '; \n';
     style_variables += createImageStyles(c.lowerThird.images);
-    var stylesheet = fs.readFileSync('./style.scss', {encoding: "utf8"});
-    fs.writeFile('styles.scss', style_variables + stylesheet, 'utf8');
-    var styles = "";
+    let stylesheet = fs.readFileSync('./style.scss', {encoding: "utf8"});
+    fs.writeFile('styles.scss', style_variables + stylesheet, () => {});
+    let styles = "";
     try {
       styles = sass.renderSync({
         data: style_variables + stylesheet
@@ -233,7 +232,7 @@ io.on('connection', function(socket){
     socket.emit('config', config);
   });
   socket.on('show', function(msg){
-    msg.id = uuid.v4();
+    msg.id = uuidv4();
     io.emit('show', msg);
   });
   socket.on('hide', function(msg){
@@ -249,7 +248,7 @@ io.on('connection', function(socket){
   socket.on('config', function(msg) {
     config = extend(true, config, msg);
     config.lowerThird.images = msg.lowerThird.images;
-    fs.writeFile('./config.json', JSON.stringify(config), "utf8");
+    fs.writeFile('./config.json', JSON.stringify(config), () => {});
     createTwitStream();
     createStyles();
   });
@@ -267,7 +266,7 @@ io.on('connection', function(socket){
     io.emit('updateSelectedTweets', selectedTweets);
   });
   socket.on('deselectTweet', function(tweet) {
-    for(var i = 0; i< selectedTweets.length; i++) {
+    for(let i = 0; i< selectedTweets.length; i++) {
       if(selectedTweets[i].id == tweet.id) {
         selectedTweets.splice(i, 1);
       }
@@ -281,7 +280,7 @@ io.on('connection', function(socket){
   socket.on('addList', function(msg) {
     if(!config.list)
       config.list = [];
-    msg.id = uuid.v4();
+    msg.id = uuidv4();
     config.list.push(msg);
     socket.emit('list', config.list);
   });
@@ -289,7 +288,7 @@ io.on('connection', function(socket){
     socket.emit('list', config.list);
   });
   socket.on('removeList', function(msg) {
-    for(var i=0; i<config.list.length; i++) {
+    for(let i=0; i<config.list.length; i++) {
       if(config.list[i].id === msg.id)
         config.list.splice(i, 1);
     }
@@ -299,7 +298,7 @@ io.on('connection', function(socket){
     showNext(socket);
   });
   socket.on('playItem', function(msg) {
-    for(var i=0; i<config.list.length; i++) {
+    for(let i=0; i<config.list.length; i++) {
       if(config.list[i].id === msg.id)
         config.list.splice(i, 1);
     }
@@ -307,11 +306,11 @@ io.on('connection', function(socket){
     socket.emit('list', config.list);
   });
   socket.on('upItem', function(msg) {
-    for(var i=0; i<config.list.length; i++) {
+    for(let i=0; i<config.list.length; i++) {
       if(config.list[i].id == msg.id) {
         if(i==0)
           break;
-        var buf = _.clone(config.list[i]);
+        let buf = _.clone(config.list[i]);
         config.list[i] = _.clone(config.list[i-1]);
         config.list[i-1] = buf;
         break;
@@ -321,11 +320,11 @@ io.on('connection', function(socket){
   });
   socket.on('downItem', function(msg) {
 
-    for(var i=0; i<config.list.length; i++) {
+    for(let i=0; i<config.list.length; i++) {
       if(config.list[i].id == msg.id) {
         if(i+1===config.list.length)
           break;
-        var buf = _.clone(config.list[i]);
+        let buf = _.clone(config.list[i]);
         config.list[i] = _.clone(config.list[i+1]);
         config.list[i+1] = buf;
         break;
@@ -336,8 +335,8 @@ io.on('connection', function(socket){
   socket.on('export', function(msg) {
     try {
       console.log("exporting to " + msg.path);
-      var zip = new Zip();
-      var calls = [];
+      let zip = new Zip();
+      let calls = [];
       calls.push(function(cb) {
         zip.addFile('config.json', function(err) {
           cb(err, null);
@@ -367,10 +366,10 @@ io.on('connection', function(socket){
   });
   socket.on('import', function(msg) {
     fs.readFile(msg.path[0], function(err, data) {
-      var zip = new Zip();
+      let zip = new Zip();
       zip.loadAsync(data).then(function() {
         zip.file('/config.json').async('string').then(function(data) {
-          fs.writeFile('config.json', data, "utf8");
+          fs.writeFile('config.json', data, () => {});
           config = JSON.parse(data);
         });
         zip.folder("uploads").forEach(function(relativePath, file) {
@@ -383,10 +382,10 @@ io.on('connection', function(socket){
   })
 });
 
-var twit = new twitter(config.twitter);
-var tweets = [];
-var stream;
-var selectedTweets = [];
+let twit = new Twitter(config.twitter);
+let tweets = [];
+let stream;
+let selectedTweets = [];
 function createTwitStream() {
   console.log(!!stream);
   console.log("creating twitter stream", config.twitter.hashtag);
@@ -394,17 +393,20 @@ function createTwitStream() {
     stream.destroy();
   if(!config.twitter.hashtag)
     return;
-  stream = twit.stream('statuses/filter', {track: config.twitter.hashtag});
-  stream.on('data', function(msg) {
-    if(msg.retweeted || msg.in_reply_to_screen_name != null || msg.text.substr(0,2) == "RT") { return; }
-    tweets.push({
-      screen_name: msg.user.screen_name,
-      text: msg.text,
-      id: msg.id
-    });
-    if(tweets.length > 10)
-      tweets.shift();
-    io.emit('tweet', tweets);
-  });
+  stream = twit.stream('statuses/filter', {track: config.twitter.hashtag})
+    .on('data', function(msg) {
+      if(msg.retweeted || msg.in_reply_to_screen_name != null || msg.text.substr(0,2) == "RT") { return; }
+      tweets.push({
+        screen_name: msg.user.screen_name,
+        text: msg.text,
+        id: msg.id
+      });
+      if(tweets.length > 10)
+        tweets.shift();
+      io.emit('tweet', tweets);
+    })
+    .on("error", error => {
+      console.log(error);
+    })
 }
 createTwitStream();
