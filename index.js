@@ -7,7 +7,6 @@ let io = require('socket.io')(http);
 let Twitter = require('twitter-lite');
 let fs = require('fs');
 let async = require('async');
-let extend = require('node.extend');
 let sass = require('sass');
 let multer = require('multer');
 let osc = require('osc-receiver');
@@ -234,7 +233,7 @@ io.on('connection', function(socket){
     }
   }
 
-  socket.on('getConfig', function(msg) {
+  socket.on('getConfig', function() {
     socket.emit('config', config);
   });
   socket.on('show', function(msg){
@@ -252,7 +251,7 @@ io.on('connection', function(socket){
     io.emit('updateSelectedTweets', selectedTweets);
   });
   socket.on('config', function(msg) {
-    config = extend(true, config, msg);
+    config = _.defaultsDeep(msg, config);
     config.lowerThird.images = msg.lowerThird.images;
     fs.writeFile(__dirname + '/config.json', JSON.stringify(config), () => {});
     createTwitStream();
