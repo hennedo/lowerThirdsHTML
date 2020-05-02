@@ -18,11 +18,14 @@
   },
   "main": "index.js",
   "devDependencies": {
-    "electron": "^7.0.0"
+    "electron": "^7.0.0",
+    "electron-packager": "^14.2.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron index.js"
+    "start": "electron index.js",
+    "build-windows": "electron-packager ./ lowerThirdsHtml --platform=win32 --arch=x64 --electron-version=7.2.1",
+    "build-mac": "electron-packager ./ lowerThirdsHtml --platform=darwin --arch=x64 --electron-version=7.2.1"
   },
   "author": "Hendrik Fellerhoff",
   "license": "GPLv3"

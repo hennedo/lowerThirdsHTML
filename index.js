@@ -17,9 +17,9 @@ const Zip = require('zip-zip-top');
 const app = electron.app;
 let config;
 try {
-  config = require('./config.json');
+  config = require(__dirname + '/config.json');
 } catch(e) {
-  config = require('./config.dist.json');
+  config = require(__dirname + '/config.dist.json');
 }
 
 const BrowserWindow = electron.BrowserWindow;
@@ -27,7 +27,13 @@ const BrowserWindow = electron.BrowserWindow;
 let mainWindow;
 
 function createWindow () {
-  mainWindow = new BrowserWindow({width: 1000, height: 600});
+  mainWindow = new BrowserWindow({
+    width: 1000,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
 
   mainWindow.loadURL('http://localhost:3000/control');
   mainWindow.on('closed', function() {
@@ -215,7 +221,7 @@ io.on('connection', function(socket){
     style_variables += createStyle(c.lowerThird, 'subtitleStyles');
     style_variables += '$imagesCount: ' + c.lowerThird.images.length + '; \n';
     style_variables += createImageStyles(c.lowerThird.images);
-    let stylesheet = fs.readFileSync('./style.scss', {encoding: "utf8"});
+    let stylesheet = fs.readFileSync(__dirname + '/style.scss', {encoding: "utf8"});
     fs.writeFile('styles.scss', style_variables + stylesheet, () => {});
     let styles = "";
     try {
@@ -248,7 +254,7 @@ io.on('connection', function(socket){
   socket.on('config', function(msg) {
     config = extend(true, config, msg);
     config.lowerThird.images = msg.lowerThird.images;
-    fs.writeFile('./config.json', JSON.stringify(config), () => {});
+    fs.writeFile(__dirname + '/config.json', JSON.stringify(config), () => {});
     createTwitStream();
     createStyles();
   });

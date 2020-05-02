@@ -1,4 +1,4 @@
-
+const remote = require('electron').remote;
 var app = angular.module('lowerThirdsHTMLApp', [
   'ngRoute',
   'colorpicker.module',
@@ -43,8 +43,8 @@ app.run(function($rootScope, $route, $routeParams) {
 });
 app.run(function($location, $rootScope, socket) {
   try {
-    const remote = require('electron').remote;
     const dialog = remote.dialog;
+    console.log("runninng");
     socket.on('message', function(msg) {
       dialog.showMessageBox({type: msg.type, buttons: ['OK'], title: msg.title, message: msg.msg})
     });
@@ -65,7 +65,9 @@ app.run(function($location, $rootScope, socket) {
           {
             label: 'Export',
             click: function() {
-              dialog.showSaveDialog({title:'Export to...'}, function(f) {
+              console.log("bla");
+              dialog.showSaveDialog({title:'Export to...'}).then(function(f) {
+                console.log("bla", f);
                 socket.emit('export', {path: f});
               })
             }
@@ -73,7 +75,7 @@ app.run(function($location, $rootScope, socket) {
           {
             label: 'Import',
             click: function() {
-              dialog.showOpenDialog({title:'Import from...'}, function(f) {
+              dialog.showOpenDialog({title:'Import from...'}).then(function(f) {
                 socket.emit('import', {path: f});
               })
             }
@@ -174,16 +176,6 @@ app.run(function($location, $rootScope, socket) {
           },
         ]
       },
-      {
-        label: 'Help',
-        role: 'help',
-        submenu: [
-          {
-            label: 'Learn More',
-            click: function() { require('electron').shell.openExternal('http://electron.atom.io') }
-          },
-        ]
-      },
     ];
     if (process.platform == 'darwin') {
       var name = require('electron').remote.app.getName();
@@ -243,7 +235,7 @@ app.run(function($location, $rootScope, socket) {
     var menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);
   } catch(e) {
-
+    console.log(e);
   }
 
 });
