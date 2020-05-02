@@ -12,7 +12,7 @@ let multer = require('multer');
 let osc = require('osc-receiver');
 let _ = require('lodash');
 const electron = require('electron');
-const Zip = require('zip-zip-top');
+const zip = require('adm-zip');
 const app = electron.app;
 let config;
 try {
@@ -339,51 +339,31 @@ io.on('connection', function(socket){
   });
   socket.on('export', function(msg) {
     try {
+      if(!msg.path.endsWith('.zip')) {
+        msg.path = msg.path + '.zip';
+      }
       console.log("exporting to " + msg.path);
-      let zip = new Zip();
-      let calls = [];
-      calls.push(function(cb) {
-        zip.addFile('config.json', function(err) {
-          cb(err, null);
-        });
-      });
-      config.lowerThird.images.forEach(function(i) {
-        calls.push(function(cb) {
-          zip.addFile('static/img/uploads/' + i.url, function(err) {
-            cb(err, null);
-          }, {
-            rootFolder: 'uploads'
-          });
-        });
-      });
-      async.parallel(calls, function(err, results) {
+      let zipFile = new zip();
+      zipFile.addLocalFile('config.json');
+      zipFile.addLocalFolder('static/img/uploads', 'uploads');
+      zipFile.writeZip(msg.path, function (err) {
         if(err)
           throw Error(err);
-        zip.writeToFile(msg.path, function(err) {
-          if(err)
-            throw Error(err);
-          socket.emit('message', {msg: 'Export finished', title: 'Export', type: 'info'})
-        });
-      })
+        socket.emit('message', {msg: 'Export finished', title: 'Export', type: 'info'})
+      });
     } catch(e) {
       console.log(e);
     }
   });
   socket.on('import', function(msg) {
-    fs.readFile(msg.path[0], function(err, data) {
-      let zip = new Zip();
-      zip.loadAsync(data).then(function() {
-        zip.file('/config.json').async('string').then(function(data) {
-          fs.writeFile('config.json', data, () => {});
-          config = JSON.parse(data);
+    console.log(msg);
+    let zipFile = new zip(msg.path);
+    zipFile.extractEntryTo('config.json', __dirname + '/', false, true);
+    zipFile.getEntries()
+        .forEach((e) => {
+          if(e.entryName === 'config.json') return;
+          zipFile.extractEntryTo(e.entryName, __dirname + '/static/img/', true, true);
         });
-        zip.folder("uploads").forEach(function(relativePath, file) {
-          zip.file(file.name).nodeStream().pipe(fs.createWriteStream('static/img/' + file.name)).on('finish', function() {
-            console.log("image " + file.name + " imported");
-          })
-        });
-      });
-    })
   })
 });
 

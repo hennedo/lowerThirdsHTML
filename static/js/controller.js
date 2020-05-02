@@ -67,8 +67,8 @@ app.run(function($location, $rootScope, socket) {
             click: function() {
               console.log("bla");
               dialog.showSaveDialog({title:'Export to...'}).then(function(f) {
-                console.log("bla", f);
-                socket.emit('export', {path: f});
+                if(f.canceled) return;
+                socket.emit('export', {path: f.filePath});
               })
             }
           },
@@ -76,7 +76,8 @@ app.run(function($location, $rootScope, socket) {
             label: 'Import',
             click: function() {
               dialog.showOpenDialog({title:'Import from...'}).then(function(f) {
-                socket.emit('import', {path: f});
+                if(f.canceled) return;
+                socket.emit('import', {path: f.filePaths[0]});
               })
             }
           },
