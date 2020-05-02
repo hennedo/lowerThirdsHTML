@@ -8,7 +8,7 @@ let Twitter = require('twitter-lite');
 let fs = require('fs');
 let sass = require('sass');
 let multer = require('multer');
-let osc = require('osc-receiver');
+let osc = require('osc');
 let _ = require('lodash');
 const electron = require('electron');
 const zip = require('adm-zip');
@@ -76,25 +76,24 @@ let uploader = multer({
   })
 });
 
-let receiver = new osc();
-try {
-  receiver.bind(8001);
-} catch(e) {
-  console.log(e);
-}
-
-receiver.on('message', function() {
-
-  // handle all messages
-  let address = arguments[0];
-  let args = Array.prototype.slice.call(arguments, 1);
-  console.log(address, args);
+let receiver = new osc.UDPPort({
+  localAddress: "0.0.0.0",
+  localPort: 8001
 });
 
-receiver.on('/lowerthird/next', function(a) {
-  if(a)
-    showNext();
+receiver.on('message', function(oscMsg) {
+  switch(oscMsg.address) {
+    case '/lowerthird/next':
+      if(oscMsg.args.length >= 1 && args[0]) {
+        showNext();
+      }
+      break;
+    default:
+      console.log(oscMsg);
+  }
 });
+
+receiver.open();
 
 web.post('/upload', uploader.single('file'), function(req, res) {
   if(!config.lowerThird.images)
