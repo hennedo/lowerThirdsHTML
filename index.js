@@ -6,7 +6,6 @@ let http = require('http').createServer(web);
 let io = require('socket.io')(http);
 let Twitter = require('twitter-lite');
 let fs = require('fs');
-let async = require('async');
 let sass = require('sass');
 let multer = require('multer');
 let osc = require('osc-receiver');
@@ -356,7 +355,6 @@ io.on('connection', function(socket){
     }
   });
   socket.on('import', function(msg) {
-    console.log(msg);
     let zipFile = new zip(msg.path);
     zipFile.extractEntryTo('config.json', __dirname + '/', false, true);
     zipFile.getEntries()
