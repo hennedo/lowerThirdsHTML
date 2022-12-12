@@ -4,7 +4,7 @@
   "description": "lowerthirds for obs",
   "dependencies": {
     "adm-zip": "^0.4.14",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "lodash": "^4.17.15",
     "multer": "^1.4.2",
     "osc": "^2.4.1",
